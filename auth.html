@@ -489,10 +489,16 @@
       }
     });
 
-    // Check if user is already logged in
+    // Check if user is already logged in or just signed in
     supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        window.location.href = 'app.html';
+      console.log('Auth state changed:', event, session?.user?.email);
+      
+      // Redirect to app.html when user is authenticated
+      if (session && session.user) {
+        // Give a small delay to ensure session is fully established
+        setTimeout(() => {
+          window.location.href = 'app.html';
+        }, 500);
       }
     });
   </script>
