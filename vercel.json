@@ -1,0 +1,12 @@
+{
+  "buildCommand": "echo 'Static site - no build needed'",
+  "framework": null,
+  "outputDirectory": ".",
+  "cleanUrls": false,
+  "rewrites": [
+    {
+      "source": "/app",
+      "destination": "/app.html"
+    }
+  ]
+}
