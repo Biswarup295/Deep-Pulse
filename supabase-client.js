@@ -2,8 +2,8 @@
 // Supabase Client Configuration
 // ============================================================
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || localStorage.getItem('supabase_url')
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || localStorage.getItem('supabase_key')
+const supabaseUrl = 'https://xrvjjcfecjyeidlhujfk.supabase.co'
+const supabaseAnonKey = 'sb_publishable_alkhTOsQZcVlk6esMhQ_Yw_9o0ZA2yz'
 
 // Initialize Supabase
 const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey)
