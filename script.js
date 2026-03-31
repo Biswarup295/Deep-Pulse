@@ -284,21 +284,48 @@ const UI = {
   },
 };
 
-// ── Local Storage ─────────────────────────────────────────────
+// ── Storage (Local + Supabase Sync) ────────────────────────
 const Storage = {
   KEY_SESSIONS: "dp_sessions",
   KEY_SETTINGS: "dp_settings",
   KEY_STREAK:   "dp_streak",
+  user: null,
+  useSupabase: false, // Set to true when user logs in
 
-  saveSession() {
-    const s = State.session;
-    localStorage.setItem("dp_active_session", JSON.stringify({ ...s, savedAt: Date.now() }));
+  async init() {
+    // Check if user is authenticated
+    try {
+      if (window.SupabaseAuth) {
+        this.user = await window.SupabaseAuth.getUser();
+        this.useSupabase = !!this.user;
+      }
+    } catch (err) {
+      console.log("Supabase auth not available, using localStorage");
+    }
   },
 
-  saveSessionHistory() {
+  async saveSession() {
+    const s = State.session;
+    const data = { ...s, savedAt: Date.now() };
+    
+    // Save to localStorage always
+    localStorage.setItem("dp_active_session", JSON.stringify(data));
+    
+    // Sync to Supabase if authenticated
+    if (this.useSupabase && this.user && window.SupabaseStorage) {
+      try {
+        await window.SupabaseStorage.saveSession(this.user.id, s);
+      } catch (err) {
+        console.warn("Failed to sync to Supabase:", err);
+      }
+    }
+  },
+
+  async saveSessionHistory() {
     const history = this.getSessionHistory();
     const s = State.session;
-    history.unshift({
+    
+    const sessionRecord = {
       id:           `s_${Date.now()}`,
       title:        s.title,
       category:     s.category,
@@ -310,14 +337,38 @@ const Storage = {
       pauses:       s.pauses,
       completed:    s.status === "ended" && s.seconds <= 0,
       date:         new Date().toISOString(),
-    });
+    };
+    
+    history.unshift(sessionRecord);
     localStorage.setItem(this.KEY_SESSIONS, JSON.stringify(history.slice(0, 100)));
+    
+    // Sync to Supabase if authenticated
+    if (this.useSupabase && this.user && window.SupabaseStorage) {
+      try {
+        await window.SupabaseStorage.saveSession(this.user.id, s);
+      } catch (err) {
+        console.warn("Failed to sync session to Supabase:", err);
+      }
+    }
+    
     this.updateStreak();
   },
 
   getSessionHistory() {
     try { return JSON.parse(localStorage.getItem(this.KEY_SESSIONS)) || []; }
     catch { return []; }
+  },
+
+  async getSyncedHistory() {
+    // Get from Supabase if available, otherwise localStorage
+    if (this.useSupabase && this.user && window.SupabaseStorage) {
+      try {
+        return await window.SupabaseStorage.getSessions(this.user.id);
+      } catch (err) {
+        console.warn("Failed to fetch from Supabase:", err);
+      }
+    }
+    return this.getSessionHistory();
   },
 
   updateStreak() {
@@ -404,6 +455,11 @@ window.DP = {
 };
 
 // ── Init ──────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DeepPulse script.js loaded");
+  
+  // Initialize Supabase storage
+  if (Storage) {
+    await Storage.init();
+  }
 });
