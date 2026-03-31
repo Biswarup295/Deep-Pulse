@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DeepPulse – Deep Work & Attention Recovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+  :root {
+    --bg: #080c14;
+    --bg2: #0d1320;
+    --bg3: #111827;
+    --surface: rgba(255,255,255,0.04);
+    --surface2: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(99,179,255,0.25);
+    --cyan: #38bdf8;
+    --blue: #6366f1;
+    --purple: #a78bfa;
+    --glow-cyan: rgba(56,189,248,0.15);
+    --glow-blue: rgba(99,102,241,0.12);
+    --text: #f1f5f9;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --accent: #38bdf8;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+  h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(8,12,20,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .logo { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+  .logo span { color: var(--cyan); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-size: 0.9rem; font-weight: 400; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--cyan); color: #000; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.85rem; padding: 0.55rem 1.4rem;
+    border-radius: 6px; text-decoration: none; letter-spacing: 0.3px;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 10rem 2rem 8rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute; top: 5%; left: 50%; transform: translateX(-50%);
+    width: 1000px; height: 600px; pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(56,189,248,0.08) 0%, rgba(99,102,241,0.04) 40%, transparent 75%);
+    filter: blur(50px);
+    animation: softDrift 8s ease-in-out infinite;
+  }
+  @keyframes softDrift { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-20px); } }
+  
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(56,189,248,0.08); border: 0.5px solid rgba(56,189,248,0.3);
+    color: var(--cyan); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.8px;
+    text-transform: uppercase; padding: 0.45rem 1.2rem; border-radius: 50px;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--cyan);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{ opacity:1; transform: scale(1); } 50%{ opacity:0.4; transform: scale(0.7); } }
+  
+  .hero h1 {
+    font-size: clamp(2.2rem, 4.5vw, 4.2rem);
+    font-weight: 800; line-height: 1.25;
+    letter-spacing: -0.8px; margin-bottom: 1.2rem;
+    animation: fadeUp 0.7s 0.1s ease both;
+    max-width: 900px;
+  }
+  .hero h1 .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-top: 0.3rem;
+  }
+  .hero-sub {
+    max-width: 680px; color: var(--text2); font-size: 1.08rem; font-weight: 300;
+    line-height: 1.8; margin-bottom: 2.8rem;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+  .hero-ctas { 
+    display: flex; gap: 1.2rem; align-items: center; justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan), #06b6d4); color: #000; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.95rem; padding: 1rem 2.2rem;
+    border-radius: 10px; text-decoration: none; border: none; cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 0 20px rgba(56,189,248,0.25);
+    letter-spacing: 0.3px;
+  }
+  .btn-primary:hover { 
+    opacity: 0.92; 
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(56,189,248,0.4);
+  }
+  .btn-ghost {
+    background: var(--surface); color: var(--text); font-family: 'Syne', sans-serif;
+    font-weight: 600; font-size: 0.95rem; padding: 1rem 2.2rem;
+    border-radius: 10px; text-decoration: none; border: 0.5px solid var(--border);
+    cursor: pointer; transition: all 0.3s;
+    letter-spacing: 0.3px;
+  }
+  .btn-ghost:hover { 
+    background: var(--surface2); 
+    border-color: rgba(56,189,248,0.4); 
+    color: var(--cyan);
+    transform: translateY(-2px);
+  }
+
+  .hero-stats {
+    display: flex; gap: 4rem; margin-top: 4.5rem; padding-top: 3.5rem;
+    border-top: 0.5px solid var(--border);
+    animation: fadeUp 0.7s 0.4s ease both;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .hero-stat { min-width: 160px; }
+  .hero-stat-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--cyan); letter-spacing: -0.5px; }
+  .hero-stat-label { font-size: 0.82rem; color: var(--text3); font-weight: 400; margin-top: 0.4rem; letter-spacing: 0.2px; }
+
+  /* PROBLEM SECTION */
+  .section { padding: 7rem 4rem; max-width: 1200px; margin: 0 auto; }
+  .section-badge {
+    display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--cyan); margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 800;
+    letter-spacing: -1px; line-height: 1.1; margin-bottom: 1.2rem;
+  }
+  .section-sub { color: var(--text2); font-size: 1.05rem; font-weight: 300; max-width: 560px; line-height: 1.7; }
+
+  .problem-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 3.5rem;
+  }
+  .problem-card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 16px; padding: 2rem;
+    transition: border-color 0.3s, background 0.3s, transform 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .problem-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .problem-card:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-3px); }
+  .problem-card:hover::before { opacity: 1; }
+  .problem-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .problem-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .problem-card p { color: var(--text2); font-size: 0.92rem; line-height: 1.65; }
+
+  /* FEATURES */
+  .features-wrap { padding: 7rem 4rem; background: var(--bg2); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); }
+  .features-inner { max-width: 1200px; margin: 0 auto; }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3.5rem;
+  }
+  .feature-card {
+    background: var(--bg); border: 0.5px solid var(--border);
+    border-radius: 16px; padding: 2rem;
+    transition: border-color 0.3s, transform 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card:hover { border-color: rgba(167,139,250,0.3); transform: translateY(-4px); }
+  .feature-icon-wrap {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--surface); border: 0.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1.2rem;
+  }
+  .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .feature-card p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+  .feature-tag {
+    display: inline-block; margin-top: 1rem; font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--cyan); background: rgba(56,189,248,0.08);
+    border: 0.5px solid rgba(56,189,248,0.2); padding: 0.25rem 0.7rem; border-radius: 4px;
+  }
+
+  /* HOW IT WORKS */
+  .how-inner { max-width: 900px; margin: 0 auto; }
+  .steps-list { display: flex; flex-direction: column; gap: 0; margin-top: 3.5rem; position: relative; }
+  .steps-list::before {
+    content: ''; position: absolute; left: 23px; top: 0; bottom: 0; width: 1px;
+    background: linear-gradient(180deg, var(--cyan) 0%, var(--purple) 50%, transparent 100%);
+    opacity: 0.3;
+  }
+  .step-item { display: flex; gap: 2rem; align-items: flex-start; padding: 2rem 0; }
+  .step-num {
+    width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+    background: var(--bg); border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800;
+    color: var(--cyan); position: relative; z-index: 1;
+  }
+  .step-content h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .step-content p { color: var(--text2); font-size: 0.93rem; line-height: 1.65; max-width: 560px; }
+
+  /* WHY SECTION */
+  .why-wrap { padding: 7rem 4rem; background: var(--bg2); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); }
+  .why-inner { max-width: 1200px; margin: 0 auto; }
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3.5rem; }
+  .compare-card {
+    border-radius: 16px; padding: 2.5rem; border: 0.5px solid var(--border);
+  }
+  .compare-card.bad { background: rgba(239,68,68,0.04); }
+  .compare-card.good { background: rgba(56,189,248,0.04); border-color: rgba(56,189,248,0.2); }
+  .compare-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .compare-card.bad .compare-label { color: #f87171; }
+  .compare-card.good .compare-label { color: var(--cyan); }
+  .compare-item { display: flex; gap: 0.75rem; align-items: flex-start; margin-bottom: 1rem; }
+  .compare-check { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .compare-item p { font-size: 0.95rem; color: var(--text2); line-height: 1.5; }
+  .compare-item p strong { color: var(--text); font-weight: 500; }
+
+  /* CTA FOOTER */
+  .cta-section {
+    padding: 8rem 4rem; text-align: center;
+    background: var(--bg); position: relative; overflow: hidden;
+  }
+  .cta-glow {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 700px; height: 400px; pointer-events: none;
+    background: radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 70%);
+    filter: blur(60px);
+  }
+  .cta-section h2 { font-size: clamp(2.2rem, 4vw, 3.5rem); font-weight: 800; letter-spacing: -1.5px; margin-bottom: 1.2rem; }
+  .cta-section p { color: var(--text2); font-size: 1.05rem; max-width: 500px; margin: 0 auto 2.5rem; }
+
+  /* FOOTER BAR */
+  footer {
+    padding: 2rem 4rem; border-top: 0.5px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    color: var(--text3); font-size: 0.83rem;
+  }
+
+  /* MOCK TIMER CARD */
+  .hero-mockup {
+    margin-top: 3.5rem; width: 100%; max-width: 520px;
+    animation: fadeUp 0.8s 0.5s ease both;
+  }
+  .mockup-card {
+    background: rgba(13, 19, 32, 0.8); border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 20px; padding: 2.2rem; text-align: left; position: relative;
+    overflow: hidden; backdrop-filter: blur(10px);
+    box-shadow: 0 20px 60px rgba(56,189,248,0.1);
+    transition: all 0.3s ease;
+  }
+  .mockup-card:hover {
+    border-color: rgba(56,189,248,0.35);
+    box-shadow: 0 25px 80px rgba(56,189,248,0.15);
+    transform: translateY(-4px);
+  }
+  .mockup-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan) 40%, var(--purple) 60%, transparent);
+  }
+  .mockup-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.8rem; }
+  .mockup-title { font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 700; letter-spacing: -0.3px; }
+  .mockup-badge {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.5px;
+    background: rgba(56,189,248,0.15); color: var(--cyan);
+    border: 0.5px solid rgba(56,189,248,0.4); padding: 0.35rem 0.9rem; border-radius: 50px;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .timer-ring { position: relative; width: 180px; height: 180px; margin: 0 auto 1.8rem; }
+  .timer-ring svg { transform: rotate(-90deg); }
+  .timer-ring .timer-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800; color: var(--text);
+    text-shadow: 0 0 20px rgba(56,189,248,0.3);
+  }
+  .timer-ring .timer-label {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    font-size: 0.75rem; color: var(--text3); font-weight: 400; white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+  .mockup-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+  .mockup-stat {
+    background: rgba(56,189,248,0.08); border: 0.5px solid rgba(56,189,248,0.2);
+    border-radius: 12px; padding: 0.95rem; text-align: center;
+    transition: all 0.2s ease;
+  }
+  .mockup-stat:hover {
+    background: rgba(56,189,248,0.12);
+    border-color: rgba(56,189,248,0.3);
+  }
+  .mockup-stat-val { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; }
+  .mockup-stat-lbl { font-size: 0.7rem; color: var(--text3); margin-top: 0.2rem; font-weight: 500; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes dashDraw { from { stroke-dashoffset: 440; } to { stroke-dashoffset: 110; } }
+  .ring-circle {
+    stroke-dasharray: 440;
+    stroke-dashoffset: 110;
+    animation: dashDraw 2s 1s ease both;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .section, .features-wrap, .why-wrap, .cta-section { padding: 5rem 1.5rem; }
+    .problem-grid, .features-grid, .compare-grid { grid-template-columns: 1fr; }
+    
+    .hero { padding: 8rem 1.5rem 6rem; }
+    .hero h1 { font-size: clamp(1.8rem, 3.5vw, 3rem); }
+    .hero-sub { font-size: 1rem; margin-bottom: 2.2rem; }
+    .hero-ctas { gap: 0.8rem; }
+    .btn-primary, .btn-ghost { padding: 0.85rem 1.8rem; font-size: 0.9rem; width: 100%; }
+    .hero-mockup { max-width: 100%; }
+    .mockup-card { padding: 1.6rem; }
+    .timer-ring { width: 140px; height: 140px; margin: 0 auto 1.2rem; }
+    .timer-ring .timer-text { font-size: 2rem; }
+    
+    .hero-stats { gap: 2rem; padding-top: 2.5rem; margin-top: 3rem; }
+    .hero-stat { min-width: 120px; }
+    .hero-stat-val { font-size: 1.6rem; }
+    .hero-stat-label { font-size: 0.75rem; }
+    
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+  
+  @media (max-width: 480px) {
+    nav { padding: 0.8rem 1rem; }
+    .logo { font-size: 1.2rem; }
+    .nav-cta { padding: 0.5rem 1rem; font-size: 0.8rem; }
+    
+    .hero { padding: 6rem 1rem 4rem; }
+    .hero-badge { font-size: 0.65rem; padding: 0.35rem 0.9rem; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(1.5rem, 3vw, 2.2rem); margin-bottom: 1rem; }
+    .hero-sub { font-size: 0.95rem; margin-bottom: 1.8rem; line-height: 1.6; }
+    
+    .hero-ctas { flex-direction: column; gap: 0.6rem; }
+    .btn-primary, .btn-ghost { 
+      width: 100%; 
+      padding: 0.8rem 1.5rem; 
+      font-size: 0.88rem;
+      border-radius: 8px;
+    }
+    
+    .hero-mockup { margin-top: 2.5rem; max-width: 100%; }
+    .mockup-card { padding: 1.4rem; }
+    .mockup-header { margin-bottom: 1.2rem; }
+    .mockup-title { font-size: 0.85rem; }
+    .mockup-badge { font-size: 0.62rem; padding: 0.3rem 0.7rem; }
+    .timer-ring { width: 120px; height: 120px; margin: 0 auto 1rem; }
+    .timer-ring .timer-text { font-size: 1.8rem; }
+    .timer-ring .timer-label { font-size: 0.65rem; bottom: 16px; }
+    .mockup-stats { gap: 0.6rem; }
+    .mockup-stat { padding: 0.7rem; }
+    .mockup-stat-val { font-size: 1rem; }
+    .mockup-stat-lbl { font-size: 0.6rem; }
+    
+    .hero-stats { 
+      flex-direction: column;
+      gap: 1.2rem; 
+      padding-top: 1.8rem; 
+      margin-top: 2.2rem; 
+      border-top: 0.5px solid var(--border);
+    }
+    .hero-stat { min-width: auto; }
+    .hero-stat-val { font-size: 1.4rem; }
+    .hero-stat-label { font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Deep<span>Pulse</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#why">Why DeepPulse</a></li>
+  </ul>
+  <a href="app.html" class="nav-cta">Start Focusing →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge"><div class="pulse-dot"></div> Now in Beta — Attention Recovery Platform</div>
+  <h1>Rebuild your attention span.<br><span class="line2">One deep-work session at a time.</span></h1>
+  <p class="hero-sub">DeepPulse doesn't just block distractions — it helps you understand your focus patterns, recover your attention stamina, and build lasting deep-work habits.</p>
+  <div class="hero-ctas">
+    <a href="app.html" class="btn-primary">Start Focusing Free</a>
+    <a href="#features" class="btn-ghost">View Features →</a>
+  </div>
+
+  <!-- MOCK TIMER CARD -->
+  <div class="hero-mockup">
+    <div class="mockup-card">
+      <div class="mockup-header">
+        <div class="mockup-title">⚡ Deep Work Mode</div>
+        <div class="mockup-badge"><div class="pulse-dot"></div> Active</div>
+      </div>
+      <div class="timer-ring">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
+          <circle cx="80" cy="80" r="70" fill="none" stroke="url(#ringGrad)" stroke-width="8"
+            stroke-linecap="round" class="ring-circle"/>
+          <defs>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#a78bfa"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="timer-text">23:41</div>
+        <div class="timer-label">remaining</div>
+      </div>
+      <div class="mockup-stats">
+        <div class="mockup-stat"><div class="mockup-stat-val">87</div><div class="mockup-stat-lbl">Focus Score</div></div>
+        <div class="mockup-stat"><div class="mockup-stat-val" style="color:#f87171">2</div><div class="mockup-stat-lbl">Distractions</div></div>
+        <div class="mockup-stat"><div class="mockup-stat-val" style="color:#a78bfa">4d</div><div class="mockup-stat-lbl">Streak</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-val">12,400+</div><div class="hero-stat-label">Sessions Completed</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">94%</div><div class="hero-stat-label">Improved Stamina</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">3.2×</div><div class="hero-stat-label">More Deep Work Hours</div></div>
+  </div>
+</section>
+
+<!-- PROBLEM SECTION -->
+<section class="section" id="problem">
+  <div class="section-badge">The Problem</div>
+  <h2 class="section-title">The attention crisis<br>is real — and growing.</h2>
+  <p class="section-sub">The average human attention span has dropped to under 8 seconds. Constant context-switching is destroying your ability to think deeply.</p>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="problem-icon">📉</div>
+      <h3>Shrinking Attention Spans</h3>
+      <p>Constant notifications and tab-switching have rewired the brain to crave dopamine hits, making sustained focus feel impossible.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">🔁</div>
+      <h3>Endless Context Switching</h3>
+      <p>The average knowledge worker switches tasks every 2 minutes. Each switch costs 23 minutes to fully recover — you never get back to flow.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">🧠</div>
+      <h3>Dopamine Burnout</h3>
+      <p>Social media and notifications create a dopamine loop that makes deep work feel physically uncomfortable and boring.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">📊</div>
+      <h3>No Visibility Into Focus</h3>
+      <p>Traditional apps track time, not attention quality. You don't know when you're actually focused vs. just sitting at a desk.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<div class="features-wrap" id="features">
+<div class="features-inner">
+  <div class="section-badge">Features</div>
+  <h2 class="section-title">Everything you need to<br>rebuild deep focus.</h2>
+  <p class="section-sub">Six intelligent systems working together to recover and strengthen your attention span — not just block distractions.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon-wrap">⏱️</div>
+      <h3>Focus Sessions</h3>
+      <p>Distraction-aware work sessions with built-in behavior tracking. Choose your duration, category, and let DeepPulse handle the rest.</p>
+      <div class="feature-tag">Core Feature</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-wrap">🎯</div>
+      <h3>AI Focus Score</h3>
+      <p>A real-time score from 0–100 that reflects your actual attention quality — factoring in idle time, tab switches, and session completion.</p>
+      <div class="feature-tag">AI Powered</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-wrap">🔍</div>
+      <h3>Distraction Tracking</h3>
+      <p>Detects tab-hiding, window-blur, and idle states automatically. Know exactly what's breaking your focus and when.</p>
+      <div class="feature-tag">Automatic</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-wrap">📈</div>
+      <h3>Deep Work Analytics</h3>
+      <p>Weekly and monthly dashboards showing your focus trends, best working hours, and stamina progression over time.</p>
+      <div class="feature-tag">Insights</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-wrap">💡</div>
+      <h3>Smart Nudges</h3>
+      <p>Non-intrusive micro-alerts triggered by behavior — not timers. "You've switched tabs 3 times" hits differently than a generic notification.</p>
+      <div class="feature-tag">Behavioral</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-wrap">🔋</div>
+      <h3>Attention Recovery</h3>
+      <p>Guided breathing resets, eye breaks, and movement prompts. Recovery is part of the training — not an afterthought.</p>
+      <div class="feature-tag">Wellness</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+<div class="how-inner">
+  <div class="section-badge">How It Works</div>
+  <h2 class="section-title">Four steps to<br>reclaim your attention.</h2>
+  <div class="steps-list">
+    <div class="step-item">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <h3>Start a Focus Session</h3>
+        <p>Set your task, choose a category (Study, Coding, Writing, Research), and pick your session length. DeepPulse begins tracking your attention from the first second.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <h3>Track Focus Behavior</h3>
+        <p>The app silently monitors tab switches, window blur events, idle time, and pause patterns. No manual logging — everything is captured automatically in real time.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <h3>Analyze Your Distractions</h3>
+        <p>After each session, your Focus Score is calculated and stored. The analytics page shows you heatmaps, distraction patterns, and your peak focus hours across the week.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <h3>Improve Attention Stamina</h3>
+        <p>AI insights coach you on optimal session lengths, best focus windows, and recovery strategies — turning short-term data into long-term habit change.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- WHY DEEPPULSE -->
+<div class="why-wrap" id="why">
+<div class="why-inner">
+  <div class="section-badge">Why DeepPulse</div>
+  <h2 class="section-title">Not just timers.<br>Not just blockers.</h2>
+  <p class="section-sub">Every other productivity app treats symptoms. DeepPulse treats the root cause — a degraded capacity for sustained attention.</p>
+  <div class="compare-grid">
+    <div class="compare-card bad">
+      <div class="compare-label">❌ Traditional Apps</div>
+      <div class="compare-item"><div class="compare-check">✗</div><p><strong>Just count down a timer</strong> — no insight into actual focus quality</p></div>
+      <div class="compare-item"><div class="compare-check">✗</div><p><strong>Block websites</strong> without helping you understand why you're reaching for them</p></div>
+      <div class="compare-item"><div class="compare-check">✗</div><p><strong>Measure time, not attention</strong> — you can "be on task" while fully distracted</p></div>
+      <div class="compare-item"><div class="compare-check">✗</div><p><strong>No recovery system</strong> — burnout is treated as a personal failing, not a signal</p></div>
+    </div>
+    <div class="compare-card good">
+      <div class="compare-label">✦ DeepPulse</div>
+      <div class="compare-item"><div class="compare-check" style="color:var(--cyan)">✓</div><p><strong>Measures attention quality</strong> in real time with a behavioral focus score</p></div>
+      <div class="compare-item"><div class="compare-check" style="color:var(--cyan)">✓</div><p><strong>Shows you your distraction patterns</strong> so you can address root causes</p></div>
+      <div class="compare-item"><div class="compare-check" style="color:var(--cyan)">✓</div><p><strong>Tracks stamina over time</strong> — your attention span is trainable, not fixed</p></div>
+      <div class="compare-item"><div class="compare-check" style="color:var(--cyan)">✓</div><p><strong>Built-in recovery protocols</strong> — science-backed resets between sessions</p></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CTA SECTION -->
+<section class="cta-section" id="cta">
+  <div class="cta-glow"></div>
+  <div style="position:relative">
+    <h2>Start your first<br><span style="background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent">focus session today.</span></h2>
+    <p>Join thousands of people rebuilding their attention span with DeepPulse. Free to start. No credit card required.</p>
+    <a href="app.html" class="btn-primary" style="font-size:1rem; padding: 1rem 2.5rem;">Start Focusing Free →</a>
+    <p style="margin-top:1rem;font-size:0.8rem;color:var(--text3)">No credit card · Works in your browser · Cancel anytime</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem">Deep<span style="color:var(--cyan)">Pulse</span></div>
+  <div>© 2025 DeepPulse. Built for the attention-first generation.</div>
+  <div style="display:flex;gap:1.5rem">
+    <a href="#" style="color:var(--text3);text-decoration:none;font-size:0.8rem">Privacy</a>
+    <a href="#" style="color:var(--text3);text-decoration:none;font-size:0.8rem">Terms</a>
+    <a href="#" style="color:var(--text3);text-decoration:none;font-size:0.8rem">Contact</a>
+  </div>
+</footer>
+
+<script>
+  // Scroll-triggered fade-in for sections
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.problem-card, .feature-card, .step-item, .compare-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+
+  // Live timer animation
+  let secs = 23 * 60 + 41;
+  const timerEl = document.querySelector('.timer-text');
+  const ringEl = document.querySelector('.ring-circle');
+  const total = 25 * 60;
+  setInterval(() => {
+    if (secs > 0) secs--;
+    const m = Math.floor(secs / 60).toString().padStart(2,'0');
+    const s = (secs % 60).toString().padStart(2,'0');
+    timerEl.textContent = `${m}:${s}`;
+    const pct = secs / total;
+    const offset = 440 * (1 - pct);
+    ringEl.style.strokeDashoffset = offset;
+  }, 1000);
+</script>
+</body>
+</html>
