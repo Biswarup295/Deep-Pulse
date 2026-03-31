@@ -33,6 +33,7 @@
     color: var(--text);
     overflow-x: hidden;
     line-height: 1.6;
+    padding-top: 75px;
   }
   h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
 
@@ -341,6 +342,7 @@
 
   /* ── Cursor Glow ─── */
   #cursor-glow {
+    display: none;
     position: fixed; pointer-events: none; z-index: 9998;
     width: 400px; height: 400px; border-radius: 50%;
     background: radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%);
@@ -775,14 +777,14 @@ window.addEventListener('scroll', () => {
   progressBar.style.width = (pct * 100) + '%';
 }, { passive: true });
 
-// ── 2. Cursor Glow ─────────────────────────
-const cursorGlow = document.getElementById('cursor-glow');
-let mouseX = -600, mouseY = -600;
-document.addEventListener('mousemove', e => {
-  mouseX = e.clientX; mouseY = e.clientY;
-  cursorGlow.style.left = mouseX + 'px';
-  cursorGlow.style.top  = mouseY + 'px';
-});
+// ── 2. Cursor Glow ───────────────────────── [DISABLED - causing lag]
+// const cursorGlow = document.getElementById('cursor-glow');
+// let mouseX = -600, mouseY = -600;
+// document.addEventListener('mousemove', e => {
+//   mouseX = e.clientX; mouseY = e.clientY;
+//   cursorGlow.style.left = mouseX + 'px';
+//   cursorGlow.style.top  = mouseY + 'px';
+// });
 
 // ── 3. Particle Canvas (Hero) ───────────────
 (function initParticles() {
