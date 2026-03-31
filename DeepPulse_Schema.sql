@@ -159,14 +159,17 @@ end;
 $$;
 
 -- =============================================
--- SEED DATA (demo user — replace user_id)
+-- SEED DATA (optional — only after creating users)
 -- =============================================
--- Run this after creating a demo user in Supabase Auth dashboard
--- Note: Replace the demo UUID below with your actual user ID from Supabase Auth
+-- To add demo data after users are created via Supabase Auth:
+-- 1. Create a user in Supabase Dashboard → Authentication → Users
+-- 2. Copy the user's UUID
+-- 3. Uncomment and replace the UUID in the script below
+-- 4. Run the script in SQL Editor
 
+/*
 do $$
-declare demo_uid uuid := '11111111-1111-1111-1111-111111111111';
-declare s1 uuid; declare s2 uuid; declare s3 uuid; declare s4 uuid;
+declare demo_uid uuid := 'YOUR_USER_UUID_FROM_AUTH';
 begin
 
 -- Seed focus sessions
@@ -201,3 +204,4 @@ values
   (demo_uid, 'diamond_focus', 'Diamond Focus', 'Logged 10+ hours in one week', '💎');
 
 end $$;
+*/
