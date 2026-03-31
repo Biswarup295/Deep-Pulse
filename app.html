@@ -1053,8 +1053,8 @@ function setFilter(el,range) {
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/module/index.js';
 
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-  const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+  const SUPABASE_URL = 'https://xrvjjcfecjyeidlhujfk.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_alkhTOsQZcVlk6esMhQ_Yw_9o0ZA2yz';
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -1064,6 +1064,21 @@ function setFilter(el,range) {
   // Check authentication with proper OAuth callback handling
   let authCheckDone = false;
   
+  // First, get current session immediately
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (!session && !authCheckDone) {
+      authCheckDone = true;
+      console.log('No session on initial load, redirecting to auth...');
+      window.location.href = 'auth.html';
+    } else if (session) {
+      console.log('Session found on initial load, user:', session.user?.email);
+      authCheckDone = true;
+    }
+  }).catch(err => {
+    console.error('Error checking session:', err);
+  });
+  
+  // Also listen for auth state changes
   supabase.auth.onAuthStateChange((event, session) => {
     console.log('Auth event:', event, 'Session:', !!session);
     
@@ -1071,15 +1086,11 @@ function setFilter(el,range) {
       // User is authenticated, stay on app
       authCheckDone = true;
       console.log('Session found, user authenticated');
-    } else if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !session)) {
-      // User is not authenticated, redirect to auth
+    } else if (event === 'SIGNED_OUT') {
+      // User signed out, redirect to auth
       if (!authCheckDone) {
         authCheckDone = true;
-        console.log('No session found, redirecting to auth...');
-        // Delay redirect slightly to allow OAuth callback to complete
-        setTimeout(() => {
-          window.location.href = 'auth.html';
-        }, 500);
+        window.location.href = 'auth.html';
       }
     }
   });

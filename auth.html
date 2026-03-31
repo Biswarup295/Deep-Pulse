@@ -490,16 +490,35 @@
     });
 
     // Check if user is already logged in or just signed in
+    let isRedirecting = false;
+    
     supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email);
+      console.log('Auth event:', event);
+      console.log('Session exists:', !!session);
+      console.log('User exists:', !!session?.user);
       
       // Redirect to app.html when user is authenticated
-      if (session && session.user) {
-        // Give a small delay to ensure session is fully established
+      if (session && session.user && !isRedirecting) {
+        isRedirecting = true;
+        console.log('User authenticated, redirecting to app.html');
         setTimeout(() => {
           window.location.href = 'app.html';
         }, 500);
       }
+    });
+
+    // Also check immediately in case session is already established
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Current session:', !!session);
+      if (session && session.user && !isRedirecting) {
+        isRedirecting = true;
+        console.log('Session already exists, redirecting to app.html');
+        setTimeout(() => {
+          window.location.href = 'app.html';
+        }, 500);
+      }
+    }).catch(err => {
+      console.error('Error getting session:', err);
     });
   </script>
 </body>
