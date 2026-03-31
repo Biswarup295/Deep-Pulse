@@ -1058,17 +1058,31 @@ function setFilter(el,range) {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Check authentication
+  // Make supabase available globally first
+  window.supabase = supabase;
+
+  // Check authentication with proper OAuth callback handling
+  let authCheckDone = false;
+  
   supabase.auth.onAuthStateChange((event, session) => {
-    if (!session && event !== 'SIGNED_OUT') {
+    console.log('Auth event:', event, 'Session:', !!session);
+    
+    if (session) {
+      // User is authenticated, stay on app
+      authCheckDone = true;
+      console.log('Session found, user authenticated');
+    } else if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !session)) {
       // User is not authenticated, redirect to auth
-      console.log('No session found, redirecting to auth...');
-      window.location.href = 'auth.html';
+      if (!authCheckDone) {
+        authCheckDone = true;
+        console.log('No session found, redirecting to auth...');
+        // Delay redirect slightly to allow OAuth callback to complete
+        setTimeout(() => {
+          window.location.href = 'auth.html';
+        }, 500);
+      }
     }
   });
-
-  // Make supabase available globally
-  window.supabase = supabase;
 </script>
 </body>
 </html>

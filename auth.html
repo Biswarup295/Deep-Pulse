@@ -451,20 +451,35 @@
     // Google auth handler
     window.handleGoogleAuth = async () => {
       try {
+        const btn = event.target.closest('button');
+        const origText = btn.textContent;
+        btn.textContent = '🔄 Redirecting to Google...';
+        btn.disabled = true;
+        
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: window.location.origin + '/app.html'
+            redirectTo: window.location.origin + '/app.html',
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent'
+            }
           }
         });
         
         if (error) throw error;
+        // If we get here, the redirect to Google's login is happening
       } catch (error) {
         console.error('Google auth error:', error);
         const activeTab = document.querySelector('.auth-tab.active').dataset.tab;
         const errorEl = document.getElementById(activeTab + '-error');
         errorEl.textContent = '✗ ' + (error.message || 'Google authentication failed');
         errorEl.style.display = 'block';
+        
+        // Reset button state
+        const btn = event.target.closest('button');
+        btn.textContent = origText;
+        btn.disabled = false;
       }
     };
 
