@@ -352,10 +352,17 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/module/index.js" type="module"></script>
-  
-  <!-- Global Google Auth Handler (runs immediately) -->
+  <!-- Supabase Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0"></script>
+
+  <!-- Initialize Supabase and Global Google Auth Handler -->
   <script>
+    // Initialize Supabase
+    const SUPABASE_URL = 'https://xrvjjcfecjyeidlhujfk.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_alkhTOsQZcVlk6esMhQ_Yw_9o0ZA2yz';
+    window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Google Auth Handler
     window.handleGoogleAuth = async function(e) {
       if (e) e.preventDefault();
       
@@ -393,11 +400,6 @@
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/module/index.js';
-
-    const SUPABASE_URL = 'https://xrvjjcfecjyeidlhujfk.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_alkhTOsQZcVlk6esMhQ_Yw_9o0ZA2yz';
-
-    window.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     const supabase = window.supabase;
 
     // Tab switching
