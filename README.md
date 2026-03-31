@@ -212,4 +212,4 @@ This project demonstrates that productivity tools can go beyond surface-level fe
 
 *Built with focus, for focus.*
 
-**[Live Demo](https://deeppulse.netlify.app)** · **[GitHub](https://github.com/yourname/deeppulse)**
+**[Live Demo](https://deep-pulse-murex.vercel.app/)** · **[GitHub](https://github.com/Biswarup295/Deep-Pulse)**
