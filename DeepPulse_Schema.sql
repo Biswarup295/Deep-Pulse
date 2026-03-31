@@ -162,9 +162,10 @@ $$;
 -- SEED DATA (demo user — replace user_id)
 -- =============================================
 -- Run this after creating a demo user in Supabase Auth dashboard
+-- Note: Replace the demo UUID below with your actual user ID from Supabase Auth
 
 do $$
-declare demo_uid uuid := 'YOUR-DEMO-USER-UUID-HERE';
+declare demo_uid uuid := '11111111-1111-1111-1111-111111111111';
 declare s1 uuid; declare s2 uuid; declare s3 uuid; declare s4 uuid;
 begin
 
