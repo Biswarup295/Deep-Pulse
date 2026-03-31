@@ -313,10 +313,11 @@ canvas{width:100%!important}
   <div class="nav-item" onclick="showPage('progress',this)"><span class="nav-icon">🏆</span>Progress</div>
   <div class="nav-item" onclick="showPage('settings',this)"><span class="nav-icon">⚙️</span>Settings</div>
   <div class="sidebar-footer">
-    <div class="user-chip">
-      <div class="avatar">AK</div>
-      <div><div class="user-name">Arjun Kumar</div><div class="user-role">Deep Work Practitioner</div></div>
+    <div class="user-chip" id="user-info">
+      <div class="avatar" id="user-avatar">AK</div>
+      <div><div class="user-name" id="user-name">Arjun Kumar</div><div class="user-role" id="user-role">Deep Work Practitioner</div></div>
     </div>
+    <button onclick="handleLogout()" style="width:100%;margin-top:1rem;padding:0.6rem 1rem;background:rgba(248,113,113,0.1);border:0.5px solid rgba(248,113,113,0.2);color:#f87171;border-radius:6px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.3s ease;">Sign Out</button>
   </div>
 </aside>
 
@@ -1049,5 +1050,25 @@ function setFilter(el,range) {
 <!-- Supabase Custom Client -->
 <script src="supabase-client.js"></script>
 <script src="script.js"></script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/module/index.js';
+
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
+  const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Check authentication
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (!session && event !== 'SIGNED_OUT') {
+      // User is not authenticated, redirect to auth
+      console.log('No session found, redirecting to auth...');
+      window.location.href = 'auth.html';
+    }
+  });
+
+  // Make supabase available globally
+  window.supabase = supabase;
+</script>
 </body>
 </html>

@@ -463,3 +463,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     await Storage.init();
   }
 });
+
+// ── Logout Handler ────────────────────────────────────────────
+window.handleLogout = async () => {
+  if (!confirm("Are you sure you want to sign out?")) return;
+  
+  try {
+    if (window.supabase) {
+      await window.supabase.auth.signOut();
+    }
+    // Clear local storage
+    localStorage.clear();
+    // Redirect to home
+    window.location.href = 'index.html';
+  } catch (error) {
+    console.error('Logout error:', error);
+    alert('Error logging out. Please try again.');
+  }
+};
