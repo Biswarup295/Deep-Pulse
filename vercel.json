@@ -1,0 +1,20 @@
+{
+  "buildCommand": "",
+  "framework": null,
+  "outputDirectory": ".",
+  "cleanUrls": false,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/app",
+      "dest": "/app.html"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    }
+  ]
+}
