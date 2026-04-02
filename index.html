@@ -33,7 +33,6 @@
     color: var(--text);
     overflow-x: hidden;
     line-height: 1.6;
-    padding-top: 75px;
   }
   h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
 
@@ -63,7 +62,7 @@
   .hero {
     min-height: 100vh; display: flex; flex-direction: column;
     align-items: center; justify-content: center; text-align: center;
-    padding: 10rem 2rem 8rem;
+    padding: 6rem 2rem 5rem;
     position: relative; overflow: hidden;
   }
   .hero-glow {
@@ -350,12 +349,6 @@
     transition: left 0.08s linear, top 0.08s linear;
   }
 
-  /* ── Particle Canvas ─── */
-  #particle-canvas {
-    position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  }
-  .hero > *:not(#particle-canvas) { position: relative; z-index: 1; }
-
   /* ── Floating Orbs (CTA) ─── */
   .orb {
     position: absolute; border-radius: 50%; pointer-events: none; filter: blur(60px);
@@ -544,7 +537,6 @@
 
 <!-- HERO -->
 <section class="hero">
-  <canvas id="particle-canvas"></canvas>
   <div class="hero-glow"></div>
   <div class="hero-badge"><div class="pulse-dot"></div> Now in Beta — Attention Recovery Platform</div>
   <h1>Rebuild your attention span.<br><span class="line2">One deep-work session at a time.</span></h1>
@@ -785,49 +777,6 @@ window.addEventListener('scroll', () => {
 //   cursorGlow.style.left = mouseX + 'px';
 //   cursorGlow.style.top  = mouseY + 'px';
 // });
-
-// ── 3. Particle Canvas (Hero) ───────────────
-(function initParticles() {
-  const canvas = document.getElementById('particle-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let W, H, particles = [];
-
-  function resize() {
-    W = canvas.width  = canvas.offsetWidth;
-    H = canvas.height = canvas.offsetHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize, { passive: true });
-
-  const COLORS = ['rgba(56,189,248,', 'rgba(167,139,250,', 'rgba(99,102,241,'];
-  for (let i = 0; i < 70; i++) {
-    particles.push({
-      x: Math.random() * 2000,
-      y: Math.random() * 900,
-      r: Math.random() * 1.8 + 0.4,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: (Math.random() - 0.5) * 0.18,
-      a: Math.random() * 0.45 + 0.15,
-      c: COLORS[Math.floor(Math.random() * COLORS.length)]
-    });
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = p.c + p.a + ')';
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
 
 // ── 4. Staggered Scroll Reveal ─────────────
 function initReveal() {
