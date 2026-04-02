@@ -112,35 +112,6 @@ deeppulse/
 ```
 
 ---
-
-## 🚀 Getting Started
-
-### Option 1 — Open Directly (Fastest)
-```bash
-# No setup needed. Open in any modern browser:
-open index.html
-```
-
-### Option 2 — Deploy to Netlify (5 minutes)
-1. Go to [app.netlify.com/drop](https://app.netlify.com/drop)
-2. Drag the entire project folder onto the page
-3. You get a live URL instantly
-
-### Option 3 — GitHub Pages
-```bash
-git init
-git add .
-git commit -m "DeepPulse hackathon demo"
-git remote add origin https://github.com/YOUR_USERNAME/deeppulse.git
-git push -u origin main
-# Enable Pages in repo Settings → Pages → Branch: main
-```
-
-### Option 4 — Full Next.js Build
-See `DeepPulse_SetupGuide.md` for the complete production setup with Supabase.
-
----
-
 ## 🔬 The Focus Score Algorithm
 
 ```
@@ -202,13 +173,6 @@ Attention is the ultimate leverage point. Everything valuable in life — learni
 
 ---
 
-## 🏆 Hackathon Note
-
-DeepPulse was built as a hackathon project focused on solving one of the most pressing but underaddressed problems in the modern world: the systematic destruction of human attention capacity by the technology ecosystem.
-
-This project demonstrates that productivity tools can go beyond surface-level features (timers, blockers) and tackle the root cause — a measurably degraded capacity for sustained, voluntary attention — through behavioral tracking, data-driven insights, and a recovery-first philosophy.
-
----
 
 *Built with focus, for focus.*
 
