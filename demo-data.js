@@ -5,9 +5,9 @@
 
 const DEMO_USER = {
   id: "demo-user-001",
-  name: "Arjun Kumar",
-  email: "arjun@deeppulse.app",
-  avatar: "AK",
+  name: "Biswarup Mondal",
+  email: "biswarupmondal295@gmail.com",
+  avatar: "BM",
   joinedDate: "2025-01-10",
   level: 7,
   levelName: "Deep Focuser",
