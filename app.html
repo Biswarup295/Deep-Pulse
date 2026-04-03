@@ -328,7 +328,7 @@ canvas{width:100%!important}
 <div id="page-dashboard" class="page active">
   <div class="page-header">
     <div>
-      <div class="page-title">Good evening, Arjun 👋</div>
+      <div class="page-title" id="dashboard-greeting">Good evening, there 👋</div>
       <div class="page-sub">Monday, March 30 · You're on a <strong style="color:var(--cyan)">4-day streak</strong></div>
     </div>
     <div class="header-actions">
@@ -1065,6 +1065,29 @@ function setFilter(el,range) {
   let authCheckDone = false;
   
   // First, get current session immediately
+  function getGreeting(name) {
+    const h = new Date().getHours();
+    const tod = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+    return `Good ${tod}, ${name} 👋`;
+  }
+
+  function populateUserInfo(user) {
+    if (!user) return;
+    const meta = user.user_metadata || {};
+    const fullName = meta.full_name || meta.name || '';
+    const firstName = fullName.trim().split(' ')[0] || user.email.split('@')[0] || 'there';
+    const greetEl = document.getElementById('dashboard-greeting');
+    if (greetEl) greetEl.textContent = getGreeting(firstName);
+    // Update sidebar name if still default
+    const nameEl = document.getElementById('user-name');
+    if (nameEl && fullName) nameEl.textContent = fullName;
+    const avatarEl = document.getElementById('user-avatar');
+    if (avatarEl && fullName) {
+      const parts = fullName.trim().split(' ');
+      avatarEl.textContent = parts.map(p => p[0]).slice(0,2).join('').toUpperCase();
+    }
+  }
+
   supabase.auth.getSession().then(({ data: { session } }) => {
     if (!session && !authCheckDone) {
       authCheckDone = true;
@@ -1073,6 +1096,7 @@ function setFilter(el,range) {
     } else if (session) {
       console.log('Session found on initial load, user:', session.user?.email);
       authCheckDone = true;
+      populateUserInfo(session.user);
     }
   }).catch(err => {
     console.error('Error checking session:', err);
